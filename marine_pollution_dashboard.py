@@ -138,13 +138,10 @@ with col1:
     st.header("🗺️ Sebaran Lokasi Insiden Polusi Laut")
     st.caption("Lokasi geografis insiden polusi laut berdasarkan koordinat.")
     if not filtered_df.empty:
-        fig_map = px.scatter_geo(filtered_df, lat='LAT_1', lon='LONG', color='pollution_type', hover_name='Country',
-                                 title="Peta Lokasi Insiden Polusi Laut", projection="natural earth", height=500,
-                                 color_discrete_sequence=px.colors.sequential.Blues)
+        fig_map = px.scatter_geo(filtered_df, lat='LAT_1', lon='LONG', color='pollution_type', hover_name='Country', title="Peta Lokasi Insiden Polusi Laut", projection="natural earth", height=500)
         st.plotly_chart(fig_map, use_container_width=True)
     else:
         st.info("Peta tidak dapat ditampilkan karena tidak ada data yang difilter.")
-
 with col2:
     st.header("📊 Jenis Polusi Paling Umum")
     st.caption("Menampilkan 3 jenis polusi laut yang paling sering terjadi.")
@@ -154,12 +151,12 @@ with col2:
             x=top_pollution.index,
             y=top_pollution.values,
             labels={'x': 'Jenis Polusi', 'y': 'Jumlah Kejadian'},
-            title="Top 10 Jenis Polusi",
-            color_discrete_sequence=px.colors.sequential.Blues
+            title=title_bar,
+            color_discrete_sequence=px.colors.qualitative.Pastel
         )
         st.plotly_chart(fig_bar, use_container_width=True)
     else:
-        st.info("Tidak ada data yang bisa ditampilkan untuk jenis polusi.")
+        st.info("Tidak ada data yang bisa ditampilkan untuk jenis polusi pada grafik ini. Mohon periksa data Excel atau filter yang dipilih.")
 
 st.header("📈 Tren Waktu Insiden Polusi Laut")
 st.caption("Jumlah insiden polusi laut dari waktu ke waktu.")
@@ -181,14 +178,14 @@ st.caption("Distribusi status kesadaran masyarakat terhadap insiden polusi laut.
 if not filtered_df.empty and 'aware_ans' in filtered_df.columns:
     aware_count = filtered_df['aware_ans'].dropna().value_counts()
     if not aware_count.empty:
-        fig_awareness = px.pie(names=aware_count.index, values=aware_count.values,
-                               title="Status 'Aware' Masyarakat", hole=0.3,
-                               color_discrete_sequence=px.colors.sequential.Blues)
-        st.plotly_chart(fig_awareness, use_container_width=True)
+            fig_awareness = px.pie(names=aware_count.index, values=aware_count.values, title="Status 'Aware' Masyarakat", hole=0.3)
+            st.plotly_chart(fig_awareness, use_container_width=True)
+        else:
+            st.info("Tidak ada data 'aware_ans' yang tersedia untuk filter yang dipilih.")
     else:
-        st.info("Tidak ada data kesadaran yang tersedia.")
+        st.info("Kolom 'aware_ans' tidak tersedia dalam dataset ini.")
 else:
-    st.info("Kolom 'aware_ans' tidak tersedia.")
+    st.info("Grafik kesadaran tidak dapat ditampilkan karena tidak ada data yang difilter.")
 
 st.markdown("---")
 st.header("📋 Detail Data Insiden")
