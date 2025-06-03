@@ -1,5 +1,5 @@
 # Install Streamlit
-!pip install streamlit
+#!pip install streamlit
 
 import streamlit as st
 import pandas as pd
