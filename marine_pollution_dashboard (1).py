@@ -1,3 +1,5 @@
+# Install Streamlit
+#!pip install streamlit
 
 import streamlit as st
 import pandas as pd
@@ -45,15 +47,15 @@ st.markdown(
 def load_data():
     try:
         df = pd.read_excel("Marine Pollution data.xlsx", sheet_name="ENV_Marine_Pollution_Obs_data_v")
-        
+
         df['inc_date'] = pd.to_datetime(df['inc_date'], errors='coerce')
         df['pollution_qty'] = pd.to_numeric(df['pollution_qty'], errors='coerce')
-        
+
         note_cols = [col for col in df.columns if col.startswith("Note")]
         df.drop(columns=note_cols, inplace=True)
-        
+
         df = df.dropna(subset=['LAT_1', 'LONG'])
-        
+
         if 'pollution_type' in df.columns:
             df['pollution_type'] = df['pollution_type'].astype(str).str.strip().str.lower()
             problematic_values = ['nan', '', ' ', '-', '0', 'null', 'n/a', 'no data']
@@ -96,9 +98,9 @@ else:
 if min_date_for_picker > max_date_for_picker:
     selected_dates = (max_date_for_picker, max_date_for_picker)
 else:
-    selected_dates = st.sidebar.date_input("Rentang Tanggal", 
-                                          value=(min_date_for_picker, max_date_for_picker), 
-                                          min_value=min_date_for_picker, 
+    selected_dates = st.sidebar.date_input("Rentang Tanggal",
+                                          value=(min_date_for_picker, max_date_for_picker),
+                                          min_value=min_date_for_picker,
                                           max_value=max_date_for_picker)
 
 selected_country = st.sidebar.selectbox("Pilih Negara", options=[None] + countries, format_func=lambda x: "Semua Negara" if x is None else x, index=0)
@@ -117,7 +119,7 @@ def filter_dataframe(data_frame, country, ptype, start_date, end_date):
     if ptype:
         dff = dff[dff['pollution_type'] == ptype]
     if start_date and end_date:
-        dff = dff.dropna(subset=['inc_date']) 
+        dff = dff.dropna(subset=['inc_date'])
         dff = dff[(dff['inc_date'].dt.date >= start_date.date()) & (dff['inc_date'].dt.date <= end_date.date())]
     return dff
 
@@ -151,7 +153,7 @@ with col2:
             x=top_pollution.index,
             y=top_pollution.values,
             labels={'x': 'Jenis Polusi', 'y': 'Jumlah Kejadian'},
-            title=title_bar,
+            title="Top 10 Jenis Polusi Paling Umum",
             color_discrete_sequence=px.colors.qualitative.Pastel
         )
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -175,9 +177,10 @@ else:
 
 st.header("💡 Kesadaran dan Edukasi Publik")
 st.caption("Distribusi status kesadaran masyarakat terhadap insiden polusi laut.")
-if not filtered_df.empty and 'aware_ans' in filtered_df.columns:
-    aware_count = filtered_df['aware_ans'].dropna().value_counts()
-    if not aware_count.empty:
+if not filtered_df.empty:
+    if 'aware_ans' in filtered_df.columns:
+        aware_count = filtered_df['aware_ans'].dropna().value_counts()
+        if not aware_count.empty:
             fig_awareness = px.pie(names=aware_count.index, values=aware_count.values, title="Status 'Aware' Masyarakat", hole=0.3)
             st.plotly_chart(fig_awareness, use_container_width=True)
         else:
@@ -185,7 +188,8 @@ if not filtered_df.empty and 'aware_ans' in filtered_df.columns:
     else:
         st.info("Kolom 'aware_ans' tidak tersedia dalam dataset ini.")
 else:
-    st.info("Grafik kesadaran tidak dapat ditampilkan karena tidak ada data yang difilter.")
+    st.info("Grafik kesadaran tidak dapat ditampilkan karena tidak ada data yang difiltered.")
+
 
 st.markdown("---")
 st.header("📋 Detail Data Insiden")
