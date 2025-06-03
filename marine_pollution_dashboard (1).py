@@ -145,20 +145,50 @@ with col1:
         st.info("Peta tidak dapat ditampilkan karena tidak ada data yang difilter.")
 with col2:
     st.header("📊 Jenis Polusi Paling Umum")
-    st.caption("Menampilkan 3 jenis polusi laut yang paling sering terjadi.")
-    top_pollution = filtered_df['pollution_type'].value_counts().nlargest(10)
-    if not top_pollution.empty:
+    st.caption("Grafik batang ini menampilkan 3 jenis polusi laut yang paling sering terjadi dalam data yang difilter. Ini membantu mengidentifikasi polusi yang paling dominan.")
+
+    top_pollution = pd.Series(dtype='int64') # Initialize as an empty Series for robustness
+
+    # Determine which DataFrame to use for the bar chart
+    data_for_bar_chart = filtered_df
+    title_bar = "3 Jenis Polusi"
+
+    if filtered_df.empty:
+        if not df.empty:
+            st.warning("Tidak ada data yang sesuai dengan filter. Menampilkan data dari semua negara dan jenis polusi.")
+            data_for_bar_chart = df
+            title_bar = "Top 10 Jenis Polusi (Semua Data)"
+        else:
+            st.info("Tidak ada data yang tersedia baik dari filter maupun data asli untuk jenis polusi.")
+            data_for_bar_chart = pd.DataFrame() # Ensure it's an empty DataFrame
+
+    if not data_for_bar_chart.empty and 'pollution_type' in data_for_bar_chart.columns:
+        # Calculate value_counts on the cleaned 'pollution_type' column
+        temp_value_counts = data_for_bar_chart['pollution_type'].value_counts()
+
+        print(f"DEBUG: Value counts for bar chart ({title_bar}):")
+        print(temp_value_counts.head(10)) # Log top 10 counts to console
+
+        if not temp_value_counts.empty:
+            top_pollution = temp_value_counts.nlargest(10)
+        else:
+            print("DEBUG: Value counts result is empty after all cleaning.")
+    else:
+        print("DEBUG: Data for bar chart is empty or 'pollution_type' column is missing/problematic.")
+
+    # --- Plotting logic ---
+    if top_pollution is not None and not top_pollution.empty:
         fig_bar = px.bar(
             x=top_pollution.index,
             y=top_pollution.values,
             labels={'x': 'Jenis Polusi', 'y': 'Jumlah Kejadian'},
-            title="Top 10 Jenis Polusi Paling Umum",
-            color_discrete_sequence=px.colors.qualitative.Pastel
+            title=title_bar,
+            color_discrete_sequence=px.colors.sequential.Blues
         )
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.plotly_chart(fig_bar, use_container_width=True) # Added missing plotting call
+
     else:
         st.info("Tidak ada data yang bisa ditampilkan untuk jenis polusi pada grafik ini. Mohon periksa data Excel atau filter yang dipilih.")
-
 st.header("📈 Tren Waktu Insiden Polusi Laut")
 st.caption("Jumlah insiden polusi laut dari waktu ke waktu.")
 if not filtered_df.empty:
