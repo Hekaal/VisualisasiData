@@ -81,7 +81,7 @@ def load_data():
 df = load_data()
 
 st.title("🌍 Marine Pollution Dashboard")
-st.caption="🌊 Lautan adalah paru-paru bumi kita.")
+st.caption=("🌊 Lautan adalah paru-paru bumi kita.")
 st.markdown("Dashboard ini menampilkan visualisasi interaktif mengenai insiden polusi laut.")
 
 st.sidebar.header("Filter Data")
