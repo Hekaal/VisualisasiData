@@ -78,7 +78,6 @@ def load_data():
 df = load_data()
 
 st.title("🌍 Marine Pollution Dashboard")
-st.image("https://cdn.pixabay.com/photo/2016/11/29/04/00/ocean-1867285_1280.jpg", use_column_width=True, caption="🌊 Lautan adalah paru-paru bumi kita.")
 st.markdown("Dashboard ini menampilkan visualisasi interaktif mengenai insiden polusi laut.")
 
 st.sidebar.header("Filter Data")
